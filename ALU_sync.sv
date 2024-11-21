@@ -6,10 +6,12 @@ module ALU_sync #(parameter Width = 4) (
   	input wire [Width-1:0] op,
   	input wire clk, enable, arst,
   	output reg cout, borrow,
-	output reg [Width-1:0] res_suma, res_resta, res_div, res_and, res_or, res_xor, res_left_shift, res_right_shift,
-	output reg [Width*2-1:0] res_mult, alu_out,
-  	output reg a_greater, a_equal, a_less
+	output reg [Width*2-1:0] alu_out
 );
+	reg [Width-1:0] res_suma, res_resta, res_div, res_and, res_or, res_xor, res_left_shift, res_right_shift;
+	reg [Width*2-1:0] res_mult;
+	reg a_greater, a_equal, a_less;
+	
 	Adder #(Width) Adder_i (
 		a, b, cout, res_suma
     	);
