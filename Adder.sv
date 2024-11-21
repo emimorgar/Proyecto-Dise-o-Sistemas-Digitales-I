@@ -22,7 +22,7 @@
 module Adder #(parameter Width = 4)(
   input wire [Width-1:0] a, b,
   output wire cout,
-  output wire [Width*2-1:0] suma
+  output wire [Width-1:0] suma
 );
     assign {cout,suma} = a + b;
 endmodule
