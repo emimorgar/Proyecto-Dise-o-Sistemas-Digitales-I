@@ -6,7 +6,7 @@ module ALU_sync #(parameter WIDTH = 4) (
     input  wire en,                     // Enable signal for the register
     input  wire [3:0] op,        // Operation selector
     input  wire [WIDTH-1:0] a, b,       // ALU inputs
-    output reg  [1:0] os,         //Overflow flag and Borrow flag
+    output reg  [7:0] os,         //Overflow flag and Borrow flag
     output reg  [WIDTH-1:0] reg_out     // Registered output
 );
 
@@ -20,15 +20,24 @@ module ALU_sync #(parameter WIDTH = 4) (
     wire [WIDTH-1:0] xor_result;
     wire [WIDTH-1:0] lsh_result;
     wire [WIDTH-1:0] rsh_result;
-    wire OF, BF;
+    
+    // Flags
+    wire zero_flag;
+    wire sign_flag;
+    wire overflow_flag;
+    wire greater_than_flag;
+    wire less_than_flag;
+    wire equal_flag;
+    wire carry_out;
+    wire borrow;
 
     // Instantiating modules
     Adder #(.WIDTH(WIDTH)) u_adder (
-        .a(a), .b(b), .carry_out(OF), .result(add_result)
+        .a(a), .b(b), .carry_out(carry_out), .result(add_result)
     );
 
     Substraction #(.WIDTH(WIDTH)) u_sub (
-        .a(a), .b(b), .borrow_out(BF), .result(sub_result)
+        .a(a), .b(b), .borrow_out(borrow), .result(sub_result)
     );
 
     Multiplication #(.WIDTH(WIDTH)) u_mul (
@@ -58,12 +67,22 @@ module ALU_sync #(parameter WIDTH = 4) (
     Right_Shift #(.WIDTH(WIDTH)) u_rsh (
         .a(a), .b(b), .result(rsh_result)
     );
+    
+        // Flag calculations
+    assign zero_flag = (reg_out == {WIDTH{1'b0}});
+    assign sign_flag = reg_out[WIDTH-1];
+    assign overflow_flag = (op == 4'b0000 || op == 4'b0001) && (a[WIDTH-1] == b[WIDTH-1]) && (reg_out[WIDTH-1] != a[WIDTH-1]);
+    assign greater_than_flag = (a > b);
+    assign less_than_flag = (a < b);
+    assign equal_flag = (a == b);
+
+    // Combine flags into the `os` bus
+    assign os = {carry_out, borrow, zero_flag, sign_flag, overflow_flag, greater_than_flag, less_than_flag, equal_flag};
 
     // Register logic
     always @(posedge clk or posedge arst) begin
         if (arst) begin
             reg_out <= {WIDTH{1'b0}}; // Reset register to 0
-            os <= 2'b00;
         end else if (en) begin
             case(op)
                 4'b0000 :   reg_out <= add_result;
@@ -77,10 +96,8 @@ module ALU_sync #(parameter WIDTH = 4) (
                 4'b1000 :   reg_out <= rsh_result; 
                 default :   reg_out <= {WIDTH{1'b0}}; 
             endcase
-            os <= {OF, BF};
         end else begin
             reg_out <= {WIDTH{1'b0}}; // Output 0 if not enabled
-            os <= 2'b00;
         end
     end
 endmodule
