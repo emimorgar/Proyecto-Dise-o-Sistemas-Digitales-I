@@ -1,57 +1,78 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
+// Company: CINVESTAV
+// Engineer: Martha Macias
 // 
 // Create Date: 26.11.2024 18:21:00
-// Design Name: 
+// Design Name: ALU_VECTORIAL
 // Module Name: tb_flags
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
+// Project Name: tb_flags
+// Target Devices: ~~~~~
+// Tool Versions: ~~~~~
+// Description: This is the code to test the flags in differents situation
 // 
-// Dependencies: 
+// Dependencies:~~~~~
 // 
-// Revision:
+// Revision:#1
 // Revision 0.01 - File Created
-// Additional Comments:
+// Additional Comments:In this moment don't had the correct result in the add
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
 
 module tb_flags;
+//Parameter to declare the parametric
     parameter WIDTH_flags = 4;
     parameter N_flags = 2;
-   
-    bit clk;//clock signal
+ //clock signal
+    bit clk;
     always #1 clk = !clk;
-    
-    
+ //request the interfaces    
     Interfaz_to_flags #(WIDTH_flags,N_flags)Interfaz_to_flags_i();
     Vectorial_ALU #(WIDTH_flags, N_flags) DUT1 (
         .A(Interfaz_to_flags_i.A),
         .B(Interfaz_to_flags_i.B),
-        .clk(Interfaz_to_flags_i.clk),
+        .clk(clk),
         .arst(Interfaz_to_flags_i.arst),
         .enable(Interfaz_to_flags_i.enable),
         .os(Interfaz_to_flags_i.os),
         .Z(Interfaz_to_flags_i.Z),
         .sel(Interfaz_to_flags_i.sel)
     );
-    
-    
-    `define A_big_B
+  //List of test    
+    //`define A_big_B
+    `define B_big_A
+ 
     `ifdef A_big_B
+    /////////////////////////////////////////////////////////////////
+    // In this test repeat the function 10 times to try catch the  //
+    // greater than flags on                                      //
+    ////////////////////////////////////////////////////////////////
         initial begin
         repeat (10)begin
-        Interfaz_to_flags_i.A_big_B();
-        @(posedge clk)
-        $display("Result: %b",Interfaz_to_flags_i.os); 
+        Interfaz_to_flags_i.A_big_B();//Mentio the function
+        @(posedge clk)//Wait the clk
+        $display("Result: %b",Interfaz_to_flags_i.os);//display the result
         end
         $finish;        
         end
     `endif
+    
+    `ifdef B_big_A
+    /////////////////////////////////////////////////////////////////
+    // In this test repeat the function 10 times to try catch the  //
+    // less than flags on                                          //
+    ////////////////////////////////////////////////////////////////
+        initial begin
+        repeat (10)begin
+        Interfaz_to_flags_i.B_big_A();//Mentio the function
+        @(posedge clk)//Wait the clk
+        $display("Result: %b",Interfaz_to_flags_i.os);//display the result
+        end
+        $finish;        
+        end
+    `endif
+    
 endmodule :tb_flags
 
 interface Interfaz_to_flags#(parameter WIDTH=4, N=2)();
@@ -59,29 +80,46 @@ interface Interfaz_to_flags#(parameter WIDTH=4, N=2)();
 // Interface to generate a conection to the DUT, these is only //
 // to teste the flags                                          //
 /////////////////////////////////////////////////////////////////
-    logic [(WIDTH*N)-1:0] A;
+    logic [(WIDTH*N)-1:0] A;        //ALU inputs
     logic [(WIDTH*N)-1:0] B;       // ALU inputs
-    logic [(8*N)-1:0] os;        //Overflow flag and Borrow flag
-    logic [3:0] sel;
-    logic clk;
-    logic arst;
-    logic [N-1:0] enable;
-    logic[((WIDTH)*N)-1:0] Z;
-    bit[3:0] temp1,temp2;
+    logic [(8*N)-1:0] os;         // Other signal 
+    logic [3:0] sel;             //Selction of peration
+    logic arst;                  //Rest 
+    logic [N-1:0] enable;        //Signal to enable
+    logic[((WIDTH)*N)-1:0] Z;   //Result
+    bit[3:0] temp1,temp2;      //Variable of to take randomize
     
+    //list of function test 
     function A_big_B();
+    //To declarar the inputs, put in zero
         A={N{1'b0}};
         B={N{1'b0}};
         enable={N{1'b1}};
-        arst=1;
-        sel=4'b0000;
+        arst=0;
+        sel=4'b0001;//substraction operation
+    //This if is to get the random value and next to connect the data in the size of A
         if (std::randomize(temp1) with{temp1<='hf;})begin
-       // std::randomize(A) with{A<='hF;{N{A}};};
         A={N{temp1}};
         end
         if (std::randomize(temp2) with{temp2<temp1;})begin
         B={N{temp2}};
         end   
     endfunction
+    
+    function B_big_A();
+    //To declarar the inputs, put in zero
+        A={N{1'b0}};
+        B={N{1'b0}};
+        enable={N{1'b1}};
+        arst=0;
+        sel=4'b0000;//adder operation
+    //This "if" is to get the random value and next to connect the data in the size of A
+        if (std::randomize(temp1) with{temp1<='hf;})begin
+        B={N{temp1}};
+        end
+        if (std::randomize(temp2) with{temp2<temp1;})begin
+        A={N{temp2}};
+        end 
+     endfunction  
     
 endinterface:Interfaz_to_flags
