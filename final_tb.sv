@@ -105,16 +105,16 @@ module ALU_tb;
 
     
     //Conditional Properties
-    property p1;@(posedge clk)(Interfaz_to_flags_i.A!=0 && Interfaz_to_flags_i.B!=0 && Interfaz_to_flags_i.sel<=4'b0101)|=> (Interfaz_to_flags_i.os[2]==1);endproperty
-    property p2;@(posedge clk)(Interfaz_to_flags_i.A!=0 && Interfaz_to_flags_i.B!=0 && Interfaz_to_flags_i.sel<=4'b0101)|=> Interfaz_to_flags_i.os[1]==1;endproperty
-    property p3;@(posedge clk)(Interfaz_to_flags_i.A==0 && Interfaz_to_flags_i.B!=0 && Interfaz_to_flags_i.sel==4'b0010)|=> Interfaz_to_flags_i.os[5]==1;endproperty
-    property p4;@(posedge clk)(Interfaz_to_flags_i.A==0 && Interfaz_to_flags_i.B==0 && Interfaz_to_flags_i.sel==4'b0000)|=> Interfaz_to_flags_i.os[5]==1;endproperty
-    property p5;@(posedge clk)(Interfaz_to_flags_i.A==Interfaz_to_flags_i.B && Interfaz_to_flags_i.sel==4'b0001)|=> Interfaz_to_flags_i.os[5]==1;endproperty
-    property p6;@(posedge clk)(Interfaz_to_flags_i.A[3]==0 && Interfaz_to_flags_i.B[3]==1 && Interfaz_to_flags_i.sel<=4'b0101)|=> Interfaz_to_flags_i.os[4]==1;endproperty
-    property p7;@(posedge clk)(Interfaz_to_flags_i.A==Interfaz_to_flags_i.B && Interfaz_to_flags_i.sel<=4'b0101)|=> Interfaz_to_flags_i.os[0]==1;endproperty
-    property p8;@(posedge clk)(Interfaz_to_flags_i.B!=0 && Interfaz_to_flags_i.A!=0 && Interfaz_to_flags_i.sel==4'b0000)|=> Interfaz_to_flags_i.os[3]==1;endproperty
-    property p11;@(posedge clk)(Interfaz_to_flags_i.A>='h5 && Interfaz_to_flags_i.A<='h9 && Interfaz_to_flags_i.B>='h5 && Interfaz_to_flags_i.B<='h9 && Interfaz_to_flags_i.sel==4'b0000)|=> Interfaz_to_flags_i.os[7]==1;endproperty
-    property p12;@(posedge clk)(Interfaz_to_flags_i.A!=0 && Interfaz_to_flags_i.B!=0 && Interfaz_to_flags_i.sel==4'b0001)|=>Interfaz_to_flags_i.os[6]==1;endproperty
+    property p1;@(posedge clk)(ALU_i.A!=0 && ALU_i.B!=0 && ALU_i.sel<=4'b0101)|=> (ALU_i.os[2]==1);endproperty
+    property p2;@(posedge clk)(ALU_i.A!=0 && ALU_i.B!=0 && ALU_i.sel<=4'b0101)|=> ALU_i.os[1]==1;endproperty
+    property p3;@(posedge clk)(ALU_i.A==0 && ALU_i.B!=0 && ALU_i.sel==4'b0010)|=> ALU_i.os[5]==1;endproperty
+    property p4;@(posedge clk)(ALU_i.A==0 && ALU_i.B==0 && ALU_i.sel==4'b0000)|=> ALU_i.os[5]==1;endproperty
+    property p5;@(posedge clk)(ALU_i.A==ALU_i.B && ALU_i.sel==4'b0001)|=> ALU_i.os[5]==1;endproperty
+    property p6;@(posedge clk)(ALU_i.A[3]==0 && ALU_i.B[3]==1 && ALU_i.sel<=4'b0101)|=> ALU_i.os[4]==1;endproperty
+    property p7;@(posedge clk)(ALU_i.A==ALU_i.B && ALU_i.sel<=4'b0101)|=> ALU_i.os[0]==1;endproperty
+    property p8;@(posedge clk)(ALU_i.B!=0 && ALU_i.A!=0 && ALU_i.sel==4'b0000)|=> ALU_i.os[3]==1;endproperty
+    property p11;@(posedge clk)(ALU_ii.A>='h5 && ALU_i.A<='h9 && ALU_i.B>='h5 && ALU_i.B<='h9 && ALU_i.sel==4'b0000)|=> ALU_i.os[7]==1;endproperty
+    property p12;@(posedge clk)(ALU_i.A!=0 && ALU_ii.B!=0 && ALU_i.sel==4'b0001)|=>ALU_i.os[6]==1;endproperty
    
     //`define A_big_B
     //`define B_big_A
